@@ -19,6 +19,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           # key - pair
           key: ${{ secrets.EC2_KEY }}
+          port: 22
           script_stop: true
           #표준출력
           # nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
