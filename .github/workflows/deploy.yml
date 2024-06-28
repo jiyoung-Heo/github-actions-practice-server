@@ -12,6 +12,8 @@ jobs:
       - name: SSH(원격접속)로 EC2에 접속하기
         # github library
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
         with:
           # ip
           host: ${{ secrets.EC2_HOST }}
@@ -20,13 +22,16 @@ jobs:
           # key - pair
           key: ${{ secrets.EC2_KEY }}
           port: 22
+          envs: APPLICATION_PROPERTIES
           script_stop: true
           #표준출력
           # nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
           # -> 해당 jar 실행하는 로그를 저기에 저장해줘
           script: |
             cd /home/ubuntu/github-actions-practice-server
+            rm -rf src/main/resources/application.yml
             git pull origin main
+            echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
